@@ -56,7 +56,7 @@ tbody tr:hover {
     transition: background 0.2s ease;
 }
 tbody td {
-    font-size: 14px;
+    font-size: 8px;
 }
 tbody tr:hover td {
     filter: brightness(0.95);
