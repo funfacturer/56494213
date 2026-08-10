@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mein Stundenplan</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- alles umhuellender container -->
+    <div class="container">
+        <!-- Tabelle -->
+        <table>
+            <!-- Tabellen-Header -->
+            <thead>
+                <!-- Tabelle-Zeile -->
+                <tr>
+                    <th>Uhrzeit</th>
+                    <th>Montag</th><th>Dienstag</th><th>Mittwoch</th><th>Donnerstag</th><th>Freitag</th><th>Samstag</th><th>Sonntag</th>
+                </tr>
+            </thead>
+            <!-- Tabelle-Body -->
+            <tbody id="stundenplan-body">
+                <!-- JavaScript wird diesen Bereich füllen -->
+            </tbody>
+        </table>
+
+        <!-- Buttons -->
+        <div class="button-leiste">
+            <button id="open-form-btn">➕ Neues Fach</button>
+            <button id="drucken-btn">🖨️ Drucken</button>
+            <button id="loeschen-btn" class="danger">🗑️ Alles löschen</button>
+        </div>
+        
+        <!-- Formular -->
+        <div id="form-container" class="hidden">
+            <form id="add-fach-form">
+                <!-- Formular Ueberschrift -->
+                <h2>Neues Fach hinzufügen</h2>
+                <!-- eine Reihe mit Name und Tag -->
+                <div class="form-row">
+
+                    <!-- Name -->
+                    <div class="form-group">
+                        <label for="fach-name">Name</label>
+                        <input type="text" id="fach-name" required>
+                    </div>
+
+                    <!-- Tag -->
+                    <div class="form-group">
+                        <label for="fach-tag">Tag</label>
+                        <select id="fach-tag">
+                            <option value="1">Montag</option><option value="2">Dienstag</option><option value="3">Mittwoch</option><option value="4">Donnerstag</option><option value="5">Freitag</option><option value="6">Samstag</option><option value="7">Sonntag</option>
+                        </select>
+                    </div>
+
+                </div>
+                <!-- eine Reihe mit STart, Ende und Farbe -->
+                <div class="form-row">
+
+                    <!-- Startzeit -->
+                    <div class="form-group">
+                        <label>Start</label>
+                        <div class="zeit-auswahl-gruppe">
+                            <select id="start-stunde" required></select>
+                            <span>:</span>
+                            <select id="start-minute" required></select>
+                        </div>
+                    </div>
+
+                    <!-- Endzeit -->
+                    <div class="form-group">
+                        <label>Ende</label>
+                        <div class="zeit-auswahl-gruppe">
+                            <select id="end-stunde" required></select>
+                            <span>:</span>
+                            <select id="end-minute" required></select>
+                        </div>
+                    </div>
+
+                    <!-- Farbe -->
+                    <div class="form-group">
+                        <label>Farbe</label>
+                        <div class="color-palette" id="fach-farbe-palette">
+                            <span class="color-swatch fach-blue active" data-color-class="fach-blue"></span>
+                            <span class="color-swatch fach-green" data-color-class="fach-green"></span>
+                            <span class="color-swatch fach-red" data-color-class="fach-red"></span>
+                            <span class="color-swatch fach-yellow" data-color-class="fach-yellow"></span>
+                            <span class="color-swatch fach-orange" data-color-class="fach-orange"></span>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit">Fach eintragen</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script>
+        // --- DATENSTRUKTUR ---
+        const START_ZEIT_H = 8, ENDE_ZEIT_H = 18, INTERVALL_MIN = 15, TAGE_ANZAHL = 7;
+        const ZEILEN_ANZAHL = (ENDE_ZEIT_H - START_ZEIT_H) * (60 / INTERVALL_MIN);
+        let stundenplanMatrix;
+
+        // --- LOGIK ---
+        function erstelleLeereMatrix() {
+            const matrix = new Array(ZEILEN_ANZAHL);
+            for (let i = 0; i < ZEILEN_ANZAHL; i++) {
+                matrix[i] = new Array(TAGE_ANZAHL).fill(null);
+            }
+            return matrix;
+        }
+
+        function zeitZuZeilenIndex(zeitString) {
+            const [stunden, minuten] = zeitString.split(':').map(Number);
+            if (stunden < START_ZEIT_H || stunden >= ENDE_ZEIT_H) return -1;
+            const minutenSeitStart = (stunden - START_ZEIT_H) * 60 + minuten;
+            return Math.floor(minutenSeitStart / INTERVALL_MIN);
+        }
+
+        function indexZuZeitString(index) {
+            const gesamtMinuten = index * INTERVALL_MIN;
+            const stunden = START_ZEIT_H + Math.floor(gesamtMinuten / 60);
+            const minuten = gesamtMinuten % 60;
+            return `${String(stunden).padStart(2, '0')}:${String(minuten).padStart(2, '0')}`;
+        }
+
+        function fuelleZeitFelder() {
+            const stundenFelder = [document.getElementById('start-stunde'), document.getElementById('end-stunde')];
+            const minutenFelder = [document.getElementById('start-minute'), document.getElementById('end-minute')];
+            const minutenOptionen = ['00', '15', '30', '45'];
+
+            // Stunden-Felder füllen (08-17)
+            stundenFelder.forEach(select => {
+                for (let i = START_ZEIT_H; i < ENDE_ZEIT_H; i++) {
+                    const option = document.createElement('option');
+                    const stunde = String(i).padStart(2, '0');
+                    option.value = stunde;
+                    option.textContent = stunde;
+                    select.appendChild(option);
+                }
+            });
+            
+            // End-Stunde bekommt noch die 18:00
+            const endStunde18 = document.createElement('option');
+            endStunde18.value = "18";
+            endStunde18.textContent = "18";
+            document.getElementById('end-stunde').appendChild(endStunde18);
+
+
+            // Minuten-Felder füllen (00, 15, 30, 45)
+            minutenFelder.forEach(select => {
+                minutenOptionen.forEach(min => {
+                    const option = document.createElement('option');
+                    option.value = min;
+                    option.textContent = min;
+                    select.appendChild(option);
+                });
+            });
+        }
+
+        function fuegeFachHinzu(fachObjekt) {
+            const startZeile = zeitZuZeilenIndex(fachObjekt.start);
+            const endZeile = zeitZuZeilenIndex(fachObjekt.end);
+            const tagSpalte = fachObjekt.tag - 1;
+
+            if (startZeile === -1 || endZeile === -1 || endZeile <= startZeile) {
+                alert("Fehler: Zeit ist ungültig, liegt außerhalb des Plans oder endet vor dem Start.");
+                return false;
+            }
+
+            const dauerInBloecken = endZeile - startZeile;
+            for (let i = 0; i < dauerInBloecken; i++) {
+                if (stundenplanMatrix[startZeile + i][tagSpalte] !== null) {
+                    alert("Fehler: Termin-Kollision!");
+                    return false;
+                }
+            }
+
+            stundenplanMatrix[startZeile][tagSpalte] = {
+                name: fachObjekt.name,
+                dauer: dauerInBloecken,
+                farbe: fachObjekt.farbe,
+                start: fachObjekt.start,
+                end: fachObjekt.end     
+            };
+            // KORREKTUR: Zellen, die überspannt werden, müssen als "belegt" markiert werden.
+            for (let i = 1; i < dauerInBloecken; i++) {
+                stundenplanMatrix[startZeile + i][tagSpalte] = "belegt";
+            }
+
+            speichereStundenplan()
+
+            return true;
+        }
+
+        function speichereStundenplan() {
+            // Wir geben unseren Daten den Namen 'meinStundenplan'
+            // JSON.stringify wandelt unser Array in einen speicherbaren String um.
+            localStorage.setItem('meinStundenplan', JSON.stringify(stundenplanMatrix));
+            console.log("Stundenplan wurde gespeichert!");
+        }
+
+        function ladeStundenplan() {
+            const gespeicherteDaten = localStorage.getItem('meinStundenplan');
+            
+            if (gespeicherteDaten) {
+                console.log("Gespeicherter Stundenplan wird geladen...");
+                // JSON.parse wandelt den String zurück in unser Array-Objekt.
+                stundenplanMatrix = JSON.parse(gespeicherteDaten);
+            } else {
+                console.log("Kein gespeicherter Stundenplan gefunden. Starte mit leerer Matrix.");
+                // Wenn nichts da ist, erstellen wir die leere Matrix wie gewohnt.
+                stundenplanMatrix = erstelleLeereMatrix();
+            }
+        }
+
+        // --- DARSTELLUNG & EVENTS ---
+        const stundenplanBody = document.getElementById('stundenplan-body');
+        function zeichneStundenplanNeu() {
+            stundenplanBody.innerHTML = '';
+            for (let zeilenIndex = 0; zeilenIndex < ZEILEN_ANZAHL; zeilenIndex++) {
+                const neueZeile = document.createElement('tr');
+                let zellenHTML = `<td class="time">${indexZuZeitString(zeilenIndex)}</td>`;
+
+                // KORREKTUR: Tippfehler `spalteIndex` zu `spaltenIndex`
+                for (let spaltenIndex = 0; spaltenIndex < TAGE_ANZAHL; spaltenIndex++) {
+                    const zellenInhalt = stundenplanMatrix[zeilenIndex][spaltenIndex];
+                    if (zellenInhalt === "belegt") {
+                        continue;
+                    } else if (zellenInhalt !== null) {
+                        // KORREKTUR: Anführungszeichen um Attribute hinzugefügt
+                        zellenHTML += `<td class="${zellenInhalt.farbe}" rowspan="${zellenInhalt.dauer}">
+                                        ${zellenInhalt.name}
+                                        <br>
+                                        <span class="fach-zeit">
+                                        ${zellenInhalt.start}
+                                        <br>
+                                        - 
+                                        <br>
+                                        ${zellenInhalt.end}</span>
+                                     </td>`;
+                    } else {
+                        // KORREKTUR: `zellenHTML` anstatt `zellenInhalt`
+                        zellenHTML += '<td>-</td>';
+                    }
+                }
+                neueZeile.innerHTML = zellenHTML;
+                stundenplanBody.appendChild(neueZeile);
+            }
+        }
+        
+        // Alle Event Listener zusammenfassen
+        const openFormButton = document.getElementById('open-form-btn'), formContainer = document.getElementById('form-container'), addFachForm = document.getElementById('add-fach-form'), colorPalette = document.getElementById('fach-farbe-palette');
+        openFormButton.addEventListener('click', () => { formContainer.classList.remove('hidden'); openFormButton.style.display = 'none'; });
+        colorPalette.addEventListener('click', (e) => { if (e.target.classList.contains('color-swatch')) { colorPalette.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active')); e.target.classList.add('active'); } });
+        addFachForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const startZeit = document.getElementById('start-stunde').value + ':' + document.getElementById('start-minute').value;
+            const endZeit = document.getElementById('end-stunde').value + ':' + document.getElementById('end-minute').value;
+            const erfolg = fuegeFachHinzu({
+                name: document.getElementById('fach-name').value,
+                tag: parseInt(document.getElementById('fach-tag').value),
+                start: startZeit,
+                end: endZeit,
+                farbe: document.querySelector('.color-swatch.active').dataset.colorClass
+            });
+            if (erfolg) {
+                zeichneStundenplanNeu();
+                addFachForm.reset();
+                formContainer.classList.add('hidden');
+                openFormButton.style.display = '';
+            }
+        });
+
+        const druckenBtn = document.getElementById('drucken-btn');
+        const loeschenBtn = document.getElementById('loeschen-btn');
+
+        // --- Drucken-Funktion ---
+        druckenBtn.addEventListener('click', () => {
+            const stundenplanTabelle = document.querySelector('table'); // Die Tabelle, die wir drucken wollen
+            const { jsPDF } = window.jspdf; // Importiert die jsPDF-Funktionalität
+
+            console.log("Erstelle PDF...");
+
+            // html2canvas macht einen "Screenshot" der Tabelle
+            html2canvas(stundenplanTabelle, {
+                scale: 2 // Erhöht die Auflösung für ein schärferes Ergebnis
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png'); // Wandelt den Screenshot in Bilddaten um
+
+                // Berechne die Dimensionen für das PDF
+                const pdf = new jsPDF('p', 'mm', 'a4'); // Hochformat, Millimeter, A4
+                const pdfBreite = pdf.internal.pageSize.getWidth();
+                const pdfHoehe = pdf.internal.pageSize.getHeight();
+                
+                const canvasBreite = canvas.width;
+                const canvasHoehe = canvas.height;
+
+                // Behalte das Seitenverhältnis des Bildes bei
+                const verhaeltnis = canvasBreite / canvasHoehe;
+                const neueBreite = pdfBreite - 20; // 10mm Rand links und rechts
+                const neueHoehe = neueBreite / verhaeltnis;
+
+                // Füge das Bild zum PDF hinzu (mit Rändern)
+                pdf.addImage(imgData, 'PNG', 10, 10, neueBreite, neueHoehe);
+                
+                // Triggere den Download
+                pdf.save('Stundenplan.pdf');
+                console.log("PDF-Download gestartet.");
+            });
+        });
+
+        // --- Löschen-Funktion ---
+        loeschenBtn.addEventListener('click', () => {
+            // Sicherheitsabfrage, um versehentliches Löschen zu verhindern
+            if (confirm("Bist du sicher, dass du den gesamten Stundenplan unwiderruflich löschen möchtest?")) {
+                localStorage.removeItem('meinStundenplan'); // Löscht die Daten
+                location.reload(); // Lädt die Seite neu, um den leeren Zustand anzuzeigen
+            }
+        });
+
+        ladeStundenplan(); 
+        fuelleZeitFelder(); 
+        zeichneStundenplanNeu();
+    </script>
+</body>
+</html>
