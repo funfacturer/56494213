@@ -203,3 +203,54 @@ tbody tr:hover td {
 .fach-red { background-color: #f8d7da; color: #721c24; font-weight: 500; }
 .fach-yellow { background-color: #fff3cd; color: #856404; font-weight: 500; }
 .fach-orange { background-color: #ffe8d6; color: #a75d00; font-weight: 500; }
+
+@media (max-width: 768px) {
+
+    /* --- Schrift und Abstände drastisch reduzieren --- */
+    body {
+        font-size: 12px; /* Kleinere Basisschriftgröße für alles */
+    }
+
+    .container {
+        width: 98%; /* Fast die ganze Breite nutzen */
+        padding: 10px; /* Kleinere Innenabstände */
+    }
+    
+    h1 {
+        font-size: 1.5em; /* Kleinere Überschrift */
+    }
+
+    table {
+        font-size: 0.8em; /* Schrift in der Tabelle nochmal kleiner */
+    }
+    
+    th, td {
+        padding: 4px 2px; /* Sehr kleine Abstände in den Zellen */
+    }
+    
+    .fach-zeit {
+        font-size: 0.7em; /* Die kleine Zeitangabe noch kleiner */
+    }
+
+
+    /* --- Formular für mobile Ansicht anpassen --- */
+    .form-row {
+        flex-direction: column; /* Elemente untereinander anordnen */
+        gap: 15px; /* Abstand zwischen den Gruppen */
+    }
+    
+    .zeit-auswahl-gruppe select {
+        width: 100%; /* Dropdowns sollen die volle Breite nutzen */
+    }
+    
+    
+    /* --- Button-Leiste anpassen --- */
+    .button-leiste {
+        flex-direction: column; /* Buttons untereinander */
+        gap: 10px;
+    }
+    
+    .button-leiste button {
+        width: 100%; /* Buttons füllen die ganze Breite */
+    }
+}
