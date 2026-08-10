@@ -221,11 +221,13 @@ tbody tr:hover td {
     }
 
     table {
-        font-size: 0.8em; /* Schrift in der Tabelle nochmal kleiner */
+        font-size: 0.8em;
+        table-layout: fixed; /* Zwingt die Tabelle, sich an die Breite zu halten */
+        word-break: break-word; /* Falls ein Wort doch zu lang ist, wird es umgebrochen */
     }
     
     th, td {
-        padding: 4px 2px; /* Sehr kleine Abstände in den Zellen */
+        padding: 4px 1px; /* Padding links/rechts auf ein Minimum reduziert */
     }
 
     .time {
