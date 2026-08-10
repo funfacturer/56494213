@@ -48,8 +48,8 @@ th {                                                /* Table Header */
 .time {
     background-color: #f9f9f9;
     color: #555;
-    width: 5%;
-    font-size: 5px;
+    width: 3%;
+    font-size: 3px;
 }
 tbody tr:hover {
     background-color: #f8f9fa;
