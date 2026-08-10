@@ -227,6 +227,12 @@ tbody tr:hover td {
     th, td {
         padding: 4px 2px; /* Sehr kleine Abstände in den Zellen */
     }
+
+    .time {
+        width: auto;      /* Hebt die feste Breite auf */
+        min-width: 40px;  /* Gibt ihr eine minimale Breite, damit sie nicht verschwindet */
+        font-size: 0.9em; /* Macht die Uhrzeit-Schrift minimal größer für Lesbarkeit */
+    }
     
     .fach-zeit {
         font-size: 0.7em; /* Die kleine Zeitangabe noch kleiner */
