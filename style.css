@@ -47,10 +47,9 @@ th {                                                /* Table Header */
 }
 .time {
     background-color: #f9f9f9;
-    font-weight: bold;
     color: #555;
     width: 5%;
-    font-size: 10px;
+    font-size: 5px;
 }
 tbody tr:hover {
     background-color: #f8f9fa;
