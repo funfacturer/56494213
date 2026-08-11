@@ -34,6 +34,7 @@ table {
     border-collapse: collapse;                      /* stndard: lücke zwischen rahmen; collapse: keine lücke */
     overflow: hidden;                               /* damit tabelle nicht über container hinausschaut */
     border-radius: 8px;                             /* abgerundete ecken */
+    table-layout: fixed;
 }
 /* zeit spalte schmäler */
 thead tr th:first-child {
@@ -252,7 +253,7 @@ tbody tr:hover td {
 
     /* zeit spalte schmäler */
     thead tr th:first-child {
-        width: 9%; 
+        width: 6%; 
     }
     /* den übrigen platz teilen sich die restlichen spalten */
     thead tr th:not(:first-child) {
