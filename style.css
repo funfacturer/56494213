@@ -34,11 +34,10 @@ table {
     border-collapse: collapse;                      /* stndard: lücke zwischen rahmen; collapse: keine lücke */
     overflow: hidden;                               /* damit tabelle nicht über container hinausschaut */
     border-radius: 8px;                             /* abgerundete ecken */
-    table-layout: fixed;
 }
 /* zeit spalte schmäler */
 thead tr th:first-child {
-    width: 8%; 
+    width: 15%; 
 }
 /* den übrigen platz teilen sich die restlichen spalten */
 thead tr th:not(:first-child) {
@@ -63,7 +62,7 @@ tbody tr:hover {
     transition: background 0.2s ease;
 }
 tbody td {
-    font-size: 14px;
+    font-size: 5px;
 }
 tbody tr:hover td {
     filter: brightness(0.95);
@@ -216,55 +215,32 @@ tbody tr:hover td {
 
 @media (max-width: 768px) {
 
-    /* --- Schrift und Abstände drastisch reduzieren --- */
-    body {
-        font-size: 12px; /* Kleinere Basisschriftgröße für alles */
-    }
+    /* --- Globale Anpassungen --- */
+    body { font-size: 13px; }
+    .container { width: 98%; padding: 10px; }
+    h1 { font-size: 1.5em; margin-bottom: 15px; }
 
-    .container {
-        width: 98%; /* Fast die ganze Breite nutzen */
-        padding: 10px; /* Kleinere Innenabstände */
-    }
-    
-    h1 {
-        font-size: 1.5em; /* Kleinere Überschrift */
-    }
-
+    /* --- Tabellen-Anpassung für schmale Bildschirme --- */
     table {
-        font-size: 0.8em;
-        table-layout: fixed; /* Zwingt die Tabelle, sich an die Breite zu halten */
-        word-break: break-word; /* Falls ein Wort doch zu lang ist, wird es umgebrochen */
+        font-size: 0.9em;
+        table-layout: fixed; /* HIER aktivieren wir es, um Kontrolle zu erzwingen */
+        word-wrap: break-word;
     }
     
     th, td {
-        padding: 4px 1px; /* Padding links/rechts auf ein Minimum reduziert */
-    }
-    
-    .fach-zeit {
-        font-size: 0.7em; /* Die kleine Zeitangabe noch kleiner */
+        padding: 5px 2px; /* Etwas mehr horizontalen Abstand als 0 */
     }
 
-
-    /* --- Formular für mobile Ansicht anpassen --- */
-    .form-row {
-        flex-direction: column; /* Elemente untereinander anordnen */
-        gap: 15px; /* Abstand zwischen den Gruppen */
-    }
-    
-    .zeit-auswahl-gruppe select {
-        width: 100%; /* Dropdowns sollen die volle Breite nutzen */
-    }
+    /* WICHTIG: Wir brauchen hier keine speziellen Breiten-Regeln mehr,
+       da table-layout:fixed die 8 Spalten jetzt fair aufteilt,
+       und die abgekürzten Header (MO, DI) kurz genug sind. */
     
     
-    /* --- Button-Leiste anpassen --- */
-    .button-leiste {
-        flex-direction: column; /* Buttons untereinander */
-        gap: 10px;
-    }
-    
-    .button-leiste button {
-        width: 100%; /* Buttons füllen die ganze Breite */
-    }
+    /* --- Formular und Buttons untereinander (unverändert) --- */
+    .form-row { flex-direction: column; gap: 15px; }
+    .zeit-auswahl-gruppe select { width: 100%; }
+    .button-leiste { flex-direction: column; gap: 10px; }
+    .button-leiste button { width: 100%; }
 }
 
 /*================================================================================================================*/
