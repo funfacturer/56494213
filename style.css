@@ -37,7 +37,7 @@ table {
 }
 /* zeit spalte schmäler */
 thead tr th:first-child {
-    width: 15%; 
+    width: 5%; 
 }
 /* den übrigen platz teilen sich die restlichen spalten */
 thead tr th:not(:first-child) {
@@ -62,7 +62,7 @@ tbody tr:hover {
     transition: background 0.2s ease;
 }
 tbody td {
-    font-size: 8px;
+    font-size: 14px;
 }
 tbody tr:hover td {
     filter: brightness(0.95);
@@ -252,7 +252,7 @@ tbody tr:hover td {
 
     /* zeit spalte schmäler */
     thead tr th:first-child {
-        width: 7%; 
+        width: 8%; 
     }
     /* den übrigen platz teilen sich die restlichen spalten */
     thead tr th:not(:first-child) {
@@ -273,7 +273,7 @@ tbody tr:hover td {
     position: absolute;
     top: 2px;
     right: 5px;
-    font-size: 1.2em;
+    font-size: 2em;
     font-weight: bold;
     cursor: pointer;
     color: rgba(0, 0, 0, 0.3);
