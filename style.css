@@ -34,6 +34,15 @@ table {
     border-collapse: collapse;                      /* stndard: lücke zwischen rahmen; collapse: keine lücke */
     overflow: hidden;                               /* damit tabelle nicht über container hinausschaut */
     border-radius: 8px;                             /* abgerundete ecken */
+    table-layout: fixed;
+}
+/* zeit spalte schmäler */
+thead tr th:first-child {
+    width: 3%; 
+}
+/* den übrigen platz teilen sich die restlichen spalten */
+thead tr th:not(:first-child) {
+    width: auto; 
 }
 th, td {                                            /* Table Header + Table Data */
     padding: 8px;
@@ -48,14 +57,14 @@ th {                                                /* Table Header */
 .time {
     background-color: #f9f9f9;
     color: #555;
-    font-size: 0.9em;
 }
+
 tbody tr:hover {
     background-color: #f8f9fa;
     transition: background 0.2s ease;
 }
 tbody td {
-    font-size: 8px;
+    font-size: 14px;
 }
 tbody tr:hover td {
     filter: brightness(0.95);
@@ -228,12 +237,6 @@ tbody tr:hover td {
     th, td {
         padding: 4px 1px; /* Padding links/rechts auf ein Minimum reduziert */
     }
-
-    .time {
-        width: auto;      /* Hebt die feste Breite auf */
-        min-width: 40px;  /* Gibt ihr eine minimale Breite, damit sie nicht verschwindet */
-        font-size: 0.9em; /* Macht die Uhrzeit-Schrift minimal größer für Lesbarkeit */
-    }
     
     .fach-zeit {
         font-size: 0.7em; /* Die kleine Zeitangabe noch kleiner */
@@ -260,4 +263,26 @@ tbody tr:hover td {
     .button-leiste button {
         width: 100%; /* Buttons füllen die ganze Breite */
     }
+}
+
+/*================================================================================================================*/
+                    /* Löschen Button */
+/*================================================================================================================*/
+
+.loeschen-fach-btn {
+    position: absolute;
+    top: 2px;
+    right: 5px;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.3);
+    transition: color 0.2s;
+}
+
+.loeschen-fach-btn:hover {
+    color: rgba(0, 0, 0, 1);
+}
+td[class^="fach-"] {
+    position: relative;
 }

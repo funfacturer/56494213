@@ -165,12 +165,10 @@
             const startZeile = zeitZuZeilenIndex(fachObjekt.start);
             const endZeile = zeitZuZeilenIndex(fachObjekt.end);
             const tagSpalte = fachObjekt.tag - 1;
-
             if (startZeile === -1 || endZeile === -1 || endZeile <= startZeile) {
                 alert("Fehler: Zeit ist ungültig, liegt außerhalb des Plans oder endet vor dem Start.");
                 return false;
             }
-
             const dauerInBloecken = endZeile - startZeile;
             for (let i = 0; i < dauerInBloecken; i++) {
                 if (stundenplanMatrix[startZeile + i][tagSpalte] !== null) {
@@ -178,7 +176,6 @@
                     return false;
                 }
             }
-
             stundenplanMatrix[startZeile][tagSpalte] = {
                 name: fachObjekt.name,
                 dauer: dauerInBloecken,
@@ -186,14 +183,26 @@
                 start: fachObjekt.start,
                 end: fachObjekt.end     
             };
-            // KORREKTUR: Zellen, die überspannt werden, müssen als "belegt" markiert werden.
             for (let i = 1; i < dauerInBloecken; i++) {
                 stundenplanMatrix[startZeile + i][tagSpalte] = "belegt";
             }
-
             speichereStundenplan()
-
             return true;
+        }
+
+        function loescheFach(zeile, spalte) {
+            const fachInfo = stundenplanMatrix[zeile][spalte];
+            if (!fachInfo || fachInfo === 'belegt') {
+                console.error("Fehler: Konnte das Fach zum Löschen nicht finden.");
+                return;
+            }
+            const dauer = fachInfo.dauer;
+            for (let i = 0; i < dauer; i++) {
+                stundenplanMatrix[zeile + i][spalte] = null;
+            }
+            console.log(`Fach "${fachInfo.name}" wurde erfolgreich gelöscht.`);
+            speichereStundenplan();
+            zeichneStundenplanNeu();
         }
 
         function speichereStundenplan() {
@@ -233,11 +242,11 @@
                     } else if (zellenInhalt !== null) {
                         // KORREKTUR: Anführungszeichen um Attribute hinzugefügt
                         zellenHTML += `<td class="${zellenInhalt.farbe}" rowspan="${zellenInhalt.dauer}">
+                                        <span class="loeschen-fach-btn" data-zeile="${zeilenIndex}" data-spalte="${spaltenIndex}">&times;</span>
                                         ${zellenInhalt.name}
                                         <br>
-                                        <span class="fach-zeit">
-                                        ${zellenInhalt.start}
-                                        <br>
+                                        <span class="fach-zeit">${zellenInhalt.start}
+                                        <br> 
                                         - 
                                         <br>
                                         ${zellenInhalt.end}</span>
@@ -272,6 +281,21 @@
                 addFachForm.reset();
                 formContainer.classList.add('hidden');
                 openFormButton.style.display = '';
+            }
+        });
+
+        stundenplanBody.addEventListener('click', function(e) {
+            // Prüfen, ob das geklickte Element die Klasse 'loeschen-fach-btn' hat
+            if (e.target && e.target.classList.contains('loeschen-fach-btn')) {
+                
+                // Die gespeicherten Koordinaten aus den data-Attributen auslesen
+                const zeile = parseInt(e.target.dataset.zeile);
+                const spalte = parseInt(e.target.dataset.spalte);
+                
+                // Eine Sicherheitsabfrage, um versehentliches Löschen zu verhindern
+                if (confirm("Möchtest du dieses Fach wirklich löschen?")) {
+                    loescheFach(zeile, spalte);
+                }
             }
         });
 
