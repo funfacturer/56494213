@@ -252,7 +252,7 @@ tbody tr:hover td {
 
     /* zeit spalte schmäler */
     thead tr th:first-child {
-        width: 8%; 
+        width: 9%; 
     }
     /* den übrigen platz teilen sich die restlichen spalten */
     thead tr th:not(:first-child) {
