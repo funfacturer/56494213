@@ -38,7 +38,7 @@ table {
 }
 /* zeit spalte schmäler */
 thead tr th:first-child {
-    width: 3%; 
+    width: 8%; 
 }
 /* den übrigen platz teilen sich die restlichen spalten */
 thead tr th:not(:first-child) {
@@ -58,7 +58,6 @@ th {                                                /* Table Header */
     background-color: #f9f9f9;
     color: #555;
 }
-
 tbody tr:hover {
     background-color: #f8f9fa;
     transition: background 0.2s ease;
@@ -78,6 +77,9 @@ tbody tr:hover td {
 .fach-zeit {
     font-size: 0.8em;  /* Etwas kleiner als der Fachname */
     opacity: 0.7;      /* Leicht transparent, um es weniger dominant zu machen */
+}
+.time {
+    font-size: 14px;
 }
 
 /*================================================================================================================*/
