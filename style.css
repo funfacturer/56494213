@@ -231,6 +231,11 @@ tbody tr:hover td {
         padding: 5px 2px; /* Etwas mehr horizontalen Abstand als 0 */
     }
 
+    .time {
+        font-size: 0.85em; /* Macht die Schrift nur in der Zeit-Spalte kleiner */
+        color: #777;      /* Graut die Schrift leicht aus, um sie weniger dominant zu machen */
+    }
+
     /* WICHTIG: Wir brauchen hier keine speziellen Breiten-Regeln mehr,
        da table-layout:fixed die 8 Spalten jetzt fair aufteilt,
        und die abgekürzten Header (MO, DI) kurz genug sind. */
